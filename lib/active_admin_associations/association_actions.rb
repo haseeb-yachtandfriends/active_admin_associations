@@ -5,11 +5,14 @@ module ActiveAdminAssociations
         reflection = resource_class.reflect_on_association(params[:relationship_name].to_sym)
         if reflection.collection?
           related_record = reflection.klass.find(params[:related_id])
-          resource.send(params[:relationship_name]).delete(related_record)
+          # Do not delete the associated record
+          # just unrelate it
+          related_record.imageable = nil
+          related_record.save
         else
           resource.update_attribute("#{params[:relationship_name]}_id", nil)
         end
-        flash[:notice] = "The recored has been unrelated."
+        flash[:notice] = "The record has been unrelated."
         redirect_to request.headers["Referer"].presence || admin_dashboard_url
       end
 
@@ -21,7 +24,7 @@ module ActiveAdminAssociations
         else
           resource.update_attribute("#{params[:relationship_name]}_id", record_to_relate)
         end
-        flash[:notice] = "The recored has been related."
+        flash[:notice] = "The record has been related."
         redirect_to request.headers["Referer"].presence || admin_dashboard_url
       end
 
