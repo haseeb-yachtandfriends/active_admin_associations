@@ -1,6 +1,6 @@
 class AutocompleteController < ApplicationController
   
-  authenticate_admin_user!
+  before_filter :authenticate_admin_user!
   
   def index
     respond_to do |format|
