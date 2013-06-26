@@ -1,4 +1,7 @@
 class AutocompleteController < ApplicationController
+  
+  authenticate_admin_user!
+  
   def index
     respond_to do |format|
       format.json {
