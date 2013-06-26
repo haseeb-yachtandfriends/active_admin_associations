@@ -7,8 +7,14 @@ module ActiveAdminAssociations
           related_record = reflection.klass.find(params[:related_id])
           # Do not delete the associated record
           # just unrelate it
-          related_record.imageable = nil
-          related_record.save
+          if reflection.options.has_key?(:as) # is a polymorphic relation
+            inverse_relationship_name = reflection.options[:as]
+            related_record.update_attribute("#{inverse_relationship_name.to_s}_id", nil)
+            related_record.update_attribute("#{inverse_relationship_name.to_s}_type", nil)
+          else
+            # belongs_to relation
+            related_record.update_attribute(resource_class.to_s.foreign_key.to_sym, nil)
+          end
         else
           resource.update_attribute("#{params[:relationship_name]}_id", nil)
         end
